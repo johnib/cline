@@ -2,12 +2,7 @@
 
 ## 3.14.0
 
-### Minor Changes
-
 -   aed152b: add truncation notice when truncating manually
-
-### Patch Changes
-
 -   5a8e9d8: protobus migration for openImage
 
 ## [3.13.3]
