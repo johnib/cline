@@ -4,14 +4,29 @@ import {
 	ModelInfo,
 	anthropicDefaultModelId,
 	anthropicModels,
+	askSageDefaultModelId,
+	askSageModels,
 	bedrockDefaultModelId,
 	bedrockModels,
+	cerebrasDefaultModelId,
+	cerebrasModels,
+	claudeCodeDefaultModelId,
+	claudeCodeModels,
 	deepSeekDefaultModelId,
 	deepSeekModels,
+	doubaoDefaultModelId,
+	doubaoModels,
 	geminiDefaultModelId,
 	geminiModels,
+	internationalQwenDefaultModelId,
+	internationalQwenModels,
+	liteLlmModelInfoSaneDefaults,
+	mainlandQwenDefaultModelId,
+	mainlandQwenModels,
 	mistralDefaultModelId,
 	mistralModels,
+	nebiusDefaultModelId,
+	nebiusModels,
 	openAiModelInfoSaneDefaults,
 	openAiNativeDefaultModelId,
 	openAiNativeModels,
@@ -19,29 +34,14 @@ import {
 	openRouterDefaultModelInfo,
 	requestyDefaultModelId,
 	requestyDefaultModelInfo,
-	mainlandQwenModels,
-	internationalQwenModels,
-	mainlandQwenDefaultModelId,
-	internationalQwenDefaultModelId,
+	sambanovaDefaultModelId,
+	sambanovaModels,
+	sapAiCoreDefaultModelId,
+	sapAiCoreModels,
 	vertexDefaultModelId,
 	vertexModels,
-	askSageModels,
-	askSageDefaultModelId,
 	xaiDefaultModelId,
 	xaiModels,
-	sambanovaModels,
-	sambanovaDefaultModelId,
-	doubaoModels,
-	doubaoDefaultModelId,
-	liteLlmModelInfoSaneDefaults,
-	nebiusModels,
-	nebiusDefaultModelId,
-	cerebrasModels,
-	cerebrasDefaultModelId,
-	sapAiCoreModels,
-	sapAiCoreDefaultModelId,
-	claudeCodeDefaultModelId,
-	claudeCodeModels,
 } from "@shared/api"
 
 /**
@@ -51,6 +51,17 @@ export interface NormalizedApiConfig {
 	selectedProvider: ApiProvider
 	selectedModelId: string
 	selectedModelInfo: ModelInfo
+}
+
+function getClaudeUIContextWindow(family: string): number | null {
+	const limits: Record<string, number> = {
+		"claude-3.5-sonnet": 90000,
+		"claude-sonnet-4": 80000,
+		"claude-opus-4": 80000,
+		"claude-3.7-sonnet": 106384,
+		"claude-3.7-sonnet-thought": 106384,
+	}
+	return limits[family] || null
 }
 
 /**
@@ -155,6 +166,11 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration): 
 				selectedModelInfo: openAiModelInfoSaneDefaults,
 			}
 		case "vscode-lm":
+			// Detect if it's a Claude model and show appropriate context window
+			const isClaudeFamily = apiConfiguration?.vsCodeLmModelSelector?.family?.startsWith("claude")
+			const family = apiConfiguration?.vsCodeLmModelSelector?.family
+			const claudeContextWindow = isClaudeFamily && family ? getClaudeUIContextWindow(family) : null
+
 			return {
 				selectedProvider: provider,
 				selectedModelId: apiConfiguration?.vsCodeLmModelSelector
@@ -162,7 +178,8 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration): 
 					: "",
 				selectedModelInfo: {
 					...openAiModelInfoSaneDefaults,
-					supportsImages: false, // VSCode LM API currently doesn't support images
+					contextWindow: claudeContextWindow || openAiModelInfoSaneDefaults.contextWindow,
+					supportsImages: isClaudeFamily, // Claude models support images
 				},
 			}
 		case "litellm":

@@ -21,14 +21,14 @@ import {
 	openAiModelInfoSaneDefaults,
 	openAiNativeModels,
 	sambanovaModels,
+	sapAiCoreModels,
 	vertexGlobalModels,
 	vertexModels,
 	xaiModels,
-	sapAiCoreModels,
 } from "@shared/api"
+import { convertApiConfigurationToProto } from "@shared/proto-conversions/models/api-configuration-conversion"
 import { EmptyRequest, StringRequest } from "@shared/proto/common"
 import { OpenAiModelsRequest, UpdateApiConfigurationRequest } from "@shared/proto/models"
-import { convertApiConfigurationToProto } from "@shared/proto-conversions/models/api-configuration-conversion"
 import {
 	VSCodeButton,
 	VSCodeCheckbox,
@@ -51,9 +51,9 @@ import ThinkingBudgetSlider from "./ThinkingBudgetSlider"
 import { formatPrice } from "./utils/pricingUtils"
 import { normalizeApiConfiguration } from "./utils/providerUtils"
 
-import { OpenRouterProvider } from "./providers/OpenRouterProvider"
-import { MistralProvider } from "./providers/MistralProvider"
 import { DeepSeekProvider } from "./providers/DeepSeekProvider"
+import { MistralProvider } from "./providers/MistralProvider"
+import { OpenRouterProvider } from "./providers/OpenRouterProvider"
 import { TogetherProvider } from "./providers/TogetherProvider"
 
 interface ApiOptionsProps {
